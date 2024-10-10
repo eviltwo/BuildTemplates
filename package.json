@@ -1,0 +1,17 @@
+{
+    "name": "com.eviltwo.build-templates",
+    "displayName": "Build Templates",
+    "version": "1.0.0",
+    "unity": "2022.3",
+    "description": "Template asset for Unity build settings and build window.",
+    "author": {
+        "name": "DAIKI(eviltwo)",
+        "url": "https://github.com/eviltwo"
+    },
+
+    "keywords": [
+    ],
+
+    "dependencies": {
+    }
+}
