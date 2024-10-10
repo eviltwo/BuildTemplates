@@ -41,6 +41,10 @@ namespace BuildTemplates
             }
 
             var buildPath = EditorUserBuildSettings.GetBuildLocation(_buildTarget);
+            if (string.IsNullOrEmpty(buildPath))
+            {
+                buildPath = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "Builds");
+            }
             buildPath = ReplaceFileName(buildPath, Application.productName);
             EditorGUILayout.LabelField($"Build path: {GenerateBuildPath(buildPath, _buildTemplate.name)}");
             if (GUILayout.Button("Change build directory"))
