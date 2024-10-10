@@ -45,7 +45,7 @@ namespace BuildTemplates
             {
                 buildPath = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "Builds");
             }
-            buildPath = ReplaceFileName(buildPath, Application.productName);
+            buildPath = ReplaceFileName(buildPath, Application.productName + GetExtension(_buildTarget));
             EditorGUILayout.LabelField($"Build path: {GenerateBuildPath(buildPath, _buildTemplate.name)}");
             if (GUILayout.Button("Change build directory"))
             {
@@ -104,8 +104,29 @@ namespace BuildTemplates
         private static string ReplaceFileName(string path, string fileName)
         {
             var directory = Path.GetDirectoryName(path);
-            var extension = Path.GetExtension(path);
-            return Path.Combine(directory, fileName + extension);
+            return Path.Combine(directory, fileName);
+        }
+
+        private static string GetExtension(BuildTarget target)
+        {
+            switch (target)
+            {
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                    return ".exe";
+                case BuildTarget.StandaloneOSX:
+                    return ".app";
+                case BuildTarget.StandaloneLinux64:
+                    return "";
+                case BuildTarget.WebGL:
+                    return "";
+                case BuildTarget.Android:
+                    return ".apk";
+                case BuildTarget.iOS:
+                    return "";
+                default:
+                    return ".exe";
+            }
         }
     }
 }
