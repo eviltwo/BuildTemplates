@@ -53,27 +53,35 @@ namespace BuildTemplates
                 EditorUserBuildSettings.SetBuildLocation(_buildTarget, buildPath);
             }
 
+            var requireBuild = false;
             using (new GUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("Build"))
                 {
-                    EditorUserBuildSettings.SetBuildLocation(_buildTarget, buildPath);
-                    var buildPlayerOptions = new BuildPlayerOptions();
-                    buildPlayerOptions.scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
-                    buildPlayerOptions.locationPathName = GenerateBuildPath(buildPath, _buildTemplate.name);
-                    buildPlayerOptions.target = _buildTarget;
-                    var options = BuildOptions.None;
-                    options |= _buildTemplate.Development ? BuildOptions.Development : BuildOptions.None;
-                    options |= _buildTemplate.AutoconnectProfiler ? BuildOptions.AutoRunPlayer : BuildOptions.None;
-                    options |= _buildTemplate.AllowDebugging ? BuildOptions.AllowDebugging : BuildOptions.None;
-                    buildPlayerOptions.options = options;
-                    buildPlayerOptions.extraScriptingDefines = _buildTemplate.ExtraScriptingDefines;
-                    BuildPipeline.BuildPlayer(buildPlayerOptions);
+                    requireBuild = true;
                 }
                 if (GUILayout.Button("Open"))
                 {
                     Process.Start(Path.GetDirectoryName(GenerateBuildPath(buildPath, _buildTemplate.name)));
                 }
+            }
+            // To avoid errors, execute the build outside of BeginLayout()/EndLayout().
+            if (requireBuild)
+            {
+                requireBuild = false;
+                EditorUserBuildSettings.SetBuildLocation(_buildTarget, buildPath);
+                var buildPlayerOptions = new BuildPlayerOptions();
+                buildPlayerOptions.scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
+                buildPlayerOptions.locationPathName = GenerateBuildPath(buildPath, _buildTemplate.name);
+                buildPlayerOptions.target = _buildTarget;
+                var options = BuildOptions.None;
+                options |= _buildTemplate.Development ? BuildOptions.Development : BuildOptions.None;
+                options |= _buildTemplate.AutoconnectProfiler ? BuildOptions.AutoRunPlayer : BuildOptions.None;
+                options |= _buildTemplate.AllowDebugging ? BuildOptions.AllowDebugging : BuildOptions.None;
+                buildPlayerOptions.options = options;
+                buildPlayerOptions.extraScriptingDefines = _buildTemplate.ExtraScriptingDefines;
+                var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+                UnityEngine.Debug.Log($"Build Report: {report.summary.result} {report.summary.totalTime}");
             }
 
             EditorGUILayout.Space();
